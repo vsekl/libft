@@ -6,7 +6,7 @@
 /*   By: vjose <vjose@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 15:51:35 by vjose             #+#    #+#             */
-/*   Updated: 2021/10/15 18:50:43 by vjose            ###   ########.fr       */
+/*   Updated: 2021/10/20 18:17:20 by vjose            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,63 +36,61 @@ static size_t	ft_count_words(char const *s, char c)
 	return (counter);
 }
 
-static size_t	ft_count_letters(char const *s, char c)
+static void	ft_free(char **tab)
 {
-	size_t	counter;
+	size_t	i;
 
-	counter = 0;
-	while (*s != 0)
+	i = 0;
+	while (tab[i] != NULL)
 	{
-		if (*s != c)
-			counter++;
-		s++;
+		free(tab[i]);
+		i++;
 	}
-	return (counter);
+	free(tab);
 }
 
-static void	ft_fill_tab(char **tab, char const *s, char c, size_t words_size)
+static void	ft_fill_tab(char **tab, char const *s, char c)
 {
 	size_t	i;
 	size_t	j;
-	char	*ptr;
-	size_t	counter;
+	size_t	k;
 
 	i = 0;
-	j = 0;
-	counter = 0;
-	ptr = (char *)tab + sizeof(char *) * (words_size + 1);
-	while (i < words_size)
+	k = 0;
+	while (s[i])
 	{
-		while (*s == c && *s != 0)
-			s++;
-		tab[i] = ptr + counter;
-		while (*s != c && *s != '\0')
-		{
-			tab[i][j++] = *s;
-			counter++;
-			s++;
-		}
-		tab[i++][j] = '\0';
-		counter++;
 		j = 0;
+		while (s[i] != '\0' && s[i] == c)
+			i++;
+		while (s[i + j] != '\0' && s[i + j] != c)
+			j++;
+		if (j != 0)
+		{
+			tab[k] = ft_substr(s, i, j);
+			if (tab[k] == NULL)
+			{
+				ft_free(tab);
+				break ;
+			}
+			k++;
+		}
+		i = i + j;
 	}
-	tab[i] = NULL;
 }
 
 char	**ft_split(char const *s, char c)
 {
 	size_t	words_size;
-	size_t	letters_size;
 	char	**tab;
 
 	if (s == NULL)
 		return (NULL);
 	words_size = ft_count_words(s, c);
-	letters_size = ft_count_letters(s, c);
-	tab = malloc(sizeof(char *) * (words_size + 1) + \
-	sizeof(char) * (letters_size + words_size));
+	tab = malloc(sizeof(char *) * (words_size + 1));
 	if (tab == NULL)
 		return (NULL);
-	ft_fill_tab(tab, s, c, words_size);
+	ft_fill_tab(tab, s, c);
+	if (tab != NULL)
+		tab[words_size] = NULL;
 	return (tab);
 }
