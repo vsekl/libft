@@ -67,10 +67,6 @@ $(NAME): $(SRCS_OBJS)
 %.o: %.c $(HEADER)
 	$(CC) $(CFLAGS) -c $<
 
-so:
-	$(CC) -nostartfiles -fPIC $(CFLAGS) $(SRCS)
-	gcc -nostartfiles -shared -o libft.so $(SRCS_OBJS)
-
 clean:
 	$(RM) $(SRCS_OBJS) $(BONUS_OBJS)
 
